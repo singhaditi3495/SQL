@@ -1,0 +1,38 @@
+Input ->
+USERNAME	ACTIVITY	STARTDATE	ENDDATE
+Alice	Travel	12-02-2020	20-02-2020
+Alice	Dancing	21-02-2020	23-02-2020
+Alice	Travel	24-02-2020	28-02-2020
+Bob	Travel	11-02-2020	18-02-2020
+
+Output ->
+USERNAME	ACTIVITY	STARTDATE	ENDDATE
+Alice	Travel	21-02-2020	23-02-2020
+Bob	Travel	11-02-2020	18-02-2020
+
+===================================
+
+create table UserActivity
+(
+username varchar(20) ,
+activity varchar(20),
+startDate Date ,
+endDate Date
+);
+
+insert into UserActivity values
+('Alice','Travel','2020-02-12','2020-02-20')
+,('Alice','Dancing','2020-02-21','2020-02-23')
+,('Alice','Travel','2020-02-24','2020-02-28')
+,('Bob','Travel','2020-02-11','2020-02-18');
+
+select * from UserActivity;
+
+with cte as (
+select *,
+count (username) over (partition by username ) as totcount,
+rank() over (partition by username order by startdate ) as rnk
+from useractivity)
+
+select username,activity,startdate,enddate
+from cte where totcount=1 or rnk=2;
